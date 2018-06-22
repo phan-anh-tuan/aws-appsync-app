@@ -1,0 +1,61 @@
+﻿type Mutation {
+  createPost(input: CreatePostInput!): Post
+  deletePost(input: DeletePostInput!): Post
+  updatePost(input: UpdatePostInput!): Post
+}
+
+type Post {
+  author: String!
+  content: String
+  downs: Int
+  id: ID!
+  title: String
+  ups: Int
+  url: String
+  version: Int!
+}
+
+type PostConnection {
+  nextToken: String
+  posts: [Post]
+}
+
+type Query {
+  getPost(id: ID!): Post
+  listPosts(after: String, first: Int): PostConnection
+}
+
+type Subscription {
+  onCreatePost(author: String, content: String, id: ID, title: String, url: String): Post
+    @aws_subscribe(mutations:["createPost"])
+  onDeletePost(author: String, content: String, id: ID, title: String, url: String): Post
+    @aws_subscribe(mutations:["deletePost"])
+  onUpdatePost(author: String, content: String, id: ID, title: String, url: String): Post
+    @aws_subscribe(mutations:["updatePost"])
+}
+
+input CreatePostInput {
+  author: String!
+  content: String
+  downs: Int
+  id: ID!
+  title: String
+  ups: Int
+  url: String
+  version: Int!
+}
+
+input DeletePostInput {
+  id: ID!
+}
+
+input UpdatePostInput {
+  author: String
+  content: String
+  downs: Int
+  id: ID!
+  title: String
+  ups: Int
+  url: String
+  version: Int
+}

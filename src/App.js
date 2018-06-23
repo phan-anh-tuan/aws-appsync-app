@@ -14,6 +14,7 @@ import AllPostsQuery from './Queries/AllPostsQuery';
 import NewPostMutation from './Queries/NewPostMutation';
 import DeletePostMutation from './Queries/DeletePostMutation';
 import UpdatePostMutation from './Queries/UpdatePostMutation';
+import NewPostsSubscription from './Queries/NewPostsSubscription';
 
 const client = new AWSAppSyncClient({
     url: AppSync.graphqlEndpoint,
@@ -67,6 +68,21 @@ const AllPostsWithData = compose(
         },
         props: (props) => ({
             posts: props.data.listPosts && props.data.listPosts.posts,
+            // START - NEW PROP :
+            subscribeToNewPosts: params => {
+                props.data.subscribeToMore({
+                    document: NewPostsSubscription,
+                    updateQuery: (prev, { subscriptionData: { data : { onCreatePost } } }) => {
+                        console.log(prev.listPosts);
+                        const retValu = ({
+                            ...prev,
+                            listPosts: { posts: [onCreatePost, ...prev.listPosts.posts.filter(post => post.id !== onCreatePost.id)], __typename: 'PostConnection' }
+                        });
+                        return retValu;
+                    }
+                });
+            },
+        // END - NEW PROP
         })
     }),
     graphql(DeletePostMutation, {

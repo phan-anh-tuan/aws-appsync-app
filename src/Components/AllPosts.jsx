@@ -9,6 +9,10 @@ export default class AllPosts extends Component {
             editing: {}
         }
     }
+    
+    componentWillMount(){
+        this.props.subscribeToNewPosts();
+    }
 
     static defaultProps = {
         posts: [],
